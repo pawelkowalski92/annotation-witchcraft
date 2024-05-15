@@ -28,10 +28,15 @@ public class ExpelliarmusProxy implements InvocationHandler {
     }
 
     private List<Class<? extends Throwable>> disarmedExceptions(Method method) {
-        Expelliarmus expelliarmus = method.getAnnotation(Expelliarmus.class);
-        return expelliarmus == null
-                ? List.of()
-                : List.of(expelliarmus.exceptions());
+        try {
+            Method targetMethod = target.getClass().getMethod(method.getName(), method.getParameterTypes());
+            Expelliarmus expelliarmus = targetMethod.getAnnotation(Expelliarmus.class);
+            return expelliarmus == null
+                    ? List.of()
+                    : List.of(expelliarmus.exceptions());
+        } catch (NoSuchMethodException e) {
+            return List.of();
+        }
     }
 
 }
